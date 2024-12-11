@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polya's Problem-Solving Quiz</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            border: 4px dashed rgb(15, 145, 37);
+        }
+        .title {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .button {
+            padding: 16px 45px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            background: #28a745;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 12px 0;
+            transition: background 0.3s ease;
+        }
+        .button:hover {
+            background: #218838;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            color: #555;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .options button {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            background: #007bff;
+            color: white;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .options button:hover {
+            transform: scale(1.1);
+        }
+        .footer {
+            font-size: 16px;
+            margin-top: 20px;
+            color: #777;
+        }
+        .timer {
+            font-weight: bold;
+            color: #333;
+        }
+        .lifeline {
+            display: flex;
+            justify-content: space-evenly;
+            margin: 20px 0;
+        }
+        .lifeline button {
+            padding: 10px 20px;
+            background: #ffc107;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .lifeline button:hover {
+            background: #e0a800;
+        }
+        .lifeline button:disabled {
+            background: #ced4da;
+            cursor: not-allowed;
+        }
+        @media (max-width: 768px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+        }
+        .bold {
+            font-weight: bold;
+            font-size: larger;
+        }
+        .result {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 50px auto;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .result h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .result p {
+            font-size: 1.2em;
+            color: #666;
+            margin: 10px 0;
+        }
+        .result .button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .result .button:hover {
+            background-color: #218838;
+        }
+        ul li {
+            list-style: none;
+            font-size: large;
+            position: relative;
+            left: -15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="menu">
+        <div class="title">Polya's Problem-Solving Quiz</div>
+        <button class="button" onclick="startGame()">Start Quiz</button>
+        <button class="button" onclick="showMembers()">Team Members</button>
+    </div>
+
+    <div class="container" id="quiz" style="display: none;">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <div class="lifeline">
+            <button id="lifeline-5050" onclick="useLifeline('5050')">50/50</button>
+            <button id="lifeline-skip" onclick="useLifeline('skip')">Skip</button>
+        </div>
+        <div id="footer" class="footer">
+            <span id="progress"></span> - Time: <span id="timer" class="timer"></span>
+        </div>
+    </div>
+
+    <div class="container" id="members" style="display: none;">
+        <div class="title">Chapter 3</div>
+        <p class="bold">Team Members:</p>
+        <ul>
+            <li>Loren Garay</li>
+            <li>Melvin Dulva</li>
+            <li>Joanne Aurelio</li>
+            <li>Lyca bazar</li>
+        </ul>
+        <button class="button" onclick="backToMenu()">Back</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "1. What are the four stages of Polya's problem-solving process?", correct: "Understanding the problem, Devising a plan, Carrying out the plan, and Looking back.", options: ["Understanding the problem, Devising a plan, Carrying out the plan, and Looking back.", "Identifying the problem, Planning the solution, Solving the problem, and Verifying the solution.", "Reading the problem, Solving it, Reviewing, and Finalizing the answer.", "Understanding, Planning, Testing, and Reflecting."] },
+            { question: "2. What does 'Understanding the problem' entail in Polya's method?", correct: "Reading carefully, identifying key elements, and grasping the problem's goal.", options: ["Reading carefully, identifying key elements, and grasping the problem's goal.", "Forming a solution without analyzing the problem.", "Repeating the problem in simpler terms.", "Starting with a rough guess and testing it."] },
+            { question: "3. What is the primary goal of 'Devising a plan'?", correct: "Choosing an effective strategy or approach to solve the problem.", options: ["Choosing an effective strategy or approach to solve the problem.", "Picking the quickest method without considering accuracy.", "Writing the answer down before solving.", "Guessing possible solutions based on prior knowledge."] },
+            { question: "4. In Polya's method, what does 'Carrying out the plan' involve?", correct: "Executing the chosen strategy, performing calculations, and finding a solution.", options: ["Executing the chosen strategy, performing calculations, and finding a solution.", "Reviewing the problem and preparing to solve.", "Guessing the answer based on initial assumptions.", "Verifying the answer using different approaches."] },
+            { question: "5. Why is 'Looking back' crucial in Polya's process?", correct: "To review, verify, and refine the solution, and learn from the experience.", options: ["To review, verify, and refine the solution, and learn from the experience.", "To check the solution using a different method.", "To reconsider the problem's steps.", "To find mistakes and correct them."] },
+            { question: "6. How does Polya's method promote critical thinking?", correct: "By encouraging systematic analysis, evaluation of options, and reflection.", options: ["By encouraging systematic analysis, evaluation of options, and reflection.", "By speeding up the problem-solving process.", "By discouraging trial and error.", "By focusing on quick memorization."] },
+            { question: "7. Can Polya's method be applied to non-mathematical problems?", correct: "Yes, Polya's strategies can be applied to various problem-solving situations.", options: ["Yes, Polya's strategies can be applied to various problem-solving situations.", "No, it is strictly for mathematical problems.", "Only for scientific problems.", "Only for business decisions."] },
+            { question: "8. What's an example of a mathematical problem where Polya's method is helpful?", correct: "Finding the area of a complex geometric shape or solving algebraic equations.", options: ["Finding the area of a complex geometric shape or solving algebraic equations.", "Finding the value of pi.", "Solving a single-step arithmetic problem.", "Solving Sudoku puzzles."] },
+            { question: "9. What's the benefit of using Polya's method for students?", correct: "Improved problem-solving skills, increased confidence, and enhanced mathematical understanding.", options: ["Improved problem-solving skills, increased confidence, and enhanced mathematical understanding.", "It helps in memorizing formulas.", "It reduces the time needed to solve problems.", "It makes math easier without effort."] },
+            { question: "10. How does reflecting on a problem help improve problem-solving?", correct: "By identifying any errors, refining approaches, and increasing learning.", options: ["By identifying any errors, refining approaches, and increasing learning.", "By memorizing the solution for future use.", "By avoiding further steps to save time.", "By ignoring the mistakes made during the process."] },
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        const timeLimit = 15;
+        let remainingTime = timeLimit;
+        let lifelines = { '5050': true, skip: true };
+
+        const quiz = document.getElementById("quiz");
+        const menu = document.getElementById("menu");
+        const members = document.getElementById("members");
+        const questionElement = document.getElementById("question");
+        const optionsElement = document.getElementById("options");
+        const footerElement = document.getElementById("footer");
+        const progressElement = document.getElementById("progress");
+        const timerElement = document.getElementById("timer");
+
+        function startGame() {
+            menu.style.display = "none";
+            quiz.style.display = "block";
+            showQuestion();
+        }
+
+        function showMembers() {
+            menu.style.display = "none";
+            members.style.display = "block";
+        }
+
+        function backToMenu() {
+            members.style.display = "none";
+            menu.style.display = "block";
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const current = questions[currentQuestion];
+            questionElement.textContent = current.question;
+
+            optionsElement.innerHTML = "";
+            progressElement.textContent = `${currentQuestion + 1}/${questions.length}`;
+
+            const options = shuffle([...current.options]);
+
+            options.forEach((option) => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.addEventListener("click", () => handleAnswer(button, option));
+                optionsElement.appendChild(button);
+            });
+
+            remainingTime = timeLimit;
+            startTimer();
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                remainingTime--;
+                timerElement.textContent = `${remainingTime}s`;
+
+                if (remainingTime <= 5) {
+                    timerElement.style.color = "red";
+                    timerElement.style.animation = "pulse 0.5s infinite alternate";
+                } else {
+                    timerElement.style.color = "black";
+                    timerElement.style.animation = "none";
+                }
+
+                if (remainingTime <= 0) {
+                    clearInterval(timer);
+                    handleAnswer(null);
+                }
+            }, 1000);
+        }
+
+        function handleAnswer(button, selectedOption) {
+            clearInterval(timer);
+            const current = questions[currentQuestion];
+            const buttons = optionsElement.querySelectorAll("button");
+
+            buttons.forEach(btn => {
+                if (btn.textContent === current.correct) {
+                    btn.style.backgroundColor = "green";
+                } else {
+                    btn.style.backgroundColor = "red";
+                }
+                btn.disabled = true;
+            });
+
+            if (selectedOption === current.correct) {
+                score++;
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion();
+            }, 1500);
+        }
+
+        function useLifeline(type) {
+            if (!lifelines[type]) return;
+
+            if (type === '5050') {
+                const current = questions[currentQuestion];
+                const incorrectOptions = optionsElement.querySelectorAll("button");
+
+                let removed = 0;
+                incorrectOptions.forEach(btn => {
+                    if (btn.textContent !== current.correct && removed < 2) {
+                        btn.style.visibility = "hidden";
+                        removed++;
+                    }
+                });
+            }
+
+            if (type === 'skip') {
+                currentQuestion++;
+                showQuestion();
+            }
+
+            lifelines[type] = false;
+            document.getElementById(`lifeline-${type}`).disabled = true;
+        }
+
+        function endGame() {
+            quiz.style.display = "none";
+            const message = score === 10 ? "Great job!" : (score >= 6 ? "Nice work!" : "Better luck next time!");
+            const resultContainer = document.createElement('div');
+            resultContainer.classList.add('result');
+            resultContainer.innerHTML = `
+                <h2>Game Over</h2>
+                <p>${message}</p>
+                <p>Your score: ${score}/${questions.length}</p>
+                <button class="button" onclick="location.reload()">Play Again</button>
+            `;
+            document.body.appendChild(resultContainer);
+        }
+    </script>
+</body>
+</html>
